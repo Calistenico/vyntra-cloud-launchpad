@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
-import { Menu, X, Server, Shield, Zap } from 'lucide-react';
+import { Menu, X, Server, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, isAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const navigation = [
     { name: 'Home', href: '#home' },
@@ -39,9 +43,26 @@ const Header = () => {
                 {item.name}
               </a>
             ))}
-            <Button className="btn-hero">
-              Área do Cliente
-            </Button>
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}
+                  className="btn-outline"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  {isAdmin ? 'Admin' : 'Dashboard'}
+                </Button>
+                <Button variant="ghost" onClick={() => signOut()}>
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sair
+                </Button>
+              </div>
+            ) : (
+              <Button className="btn-primary" onClick={() => navigate('/auth')}>
+                Entrar
+              </Button>
+            )}
           </nav>
 
           {/* Mobile menu button */}
@@ -70,9 +91,26 @@ const Header = () => {
                   {item.name}
                 </a>
               ))}
-              <Button className="btn-hero mt-4">
-                Área do Cliente
-              </Button>
+              {user ? (
+                <div className="flex flex-col space-y-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')}
+                    className="btn-outline"
+                  >
+                    <User className="h-4 w-4 mr-2" />
+                    {isAdmin ? 'Admin' : 'Dashboard'}
+                  </Button>
+                  <Button variant="ghost" onClick={() => signOut()}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Sair
+                  </Button>
+                </div>
+              ) : (
+                <Button className="btn-primary mt-4" onClick={() => navigate('/auth')}>
+                  Entrar
+                </Button>
+              )}
             </nav>
           </div>
         )}

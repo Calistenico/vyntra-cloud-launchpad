@@ -1,81 +1,40 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Cpu, HardDrive, Wifi, Shield, Zap } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const PlansSection = () => {
-  const plans = [
-    {
-      name: 'VPS Starter',
-      ram: '1GB',
-      price: 25.90,
-      popular: false,
-      features: [
-        '1GB RAM DDR4',
-        '60GB SSD NVMe',
-        'Dual Xeon 5520 Custom',
-        'Internet ilimitada',
-        'IP dedicado',
-        'Painel de controle',
-        'Garantia 7 dias',
-        'Suporte 24/7'
-      ],
-      specs: {
-        cpu: '2 vCores',
-        storage: '60GB SSD',
-        bandwidth: 'Ilimitada',
-        ip: '1 IP dedicado'
-      }
-    },
-    {
-      name: 'VPS Professional',
-      ram: '4GB',
-      price: 47.50,
-      popular: true,
-      features: [
-        '4GB RAM DDR4',
-        '60GB SSD NVMe',
-        'Dual Xeon 5520 Custom',
-        'Internet ilimitada',
-        'IP dedicado',
-        'Painel de controle',
-        'Garantia 7 dias',
-        'Suporte prioritário 24/7',
-        'Backup automático'
-      ],
-      specs: {
-        cpu: '4 vCores',
-        storage: '60GB SSD',
-        bandwidth: 'Ilimitada',
-        ip: '1 IP dedicado'
-      }
-    },
-    {
-      name: 'VPS Enterprise',
-      ram: '8GB',
-      price: 82.50,
-      popular: false,
-      features: [
-        '8GB RAM DDR4',
-        '60GB SSD NVMe',
-        'Dual Xeon 5520 Custom',
-        'Internet ilimitada',
-        'IP dedicado',
-        'Painel de controle avançado',
-        'Garantia 7 dias',
-        'Suporte VIP 24/7',
-        'Backup automático diário',
-        'Monitoramento avançado'
-      ],
-      specs: {
-        cpu: '6 vCores',
-        storage: '60GB SSD',
-        bandwidth: 'Ilimitada',
-        ip: '1 IP dedicado'
-      }
+  const [plans, setPlans] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  const fetchPlans = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('plans')
+        .select('*')
+        .eq('is_active', true)
+        .order('price', { ascending: true });
+
+      if (error) throw error;
+      setPlans(data || []);
+    } catch (error) {
+      console.error('Error fetching plans:', error);
+    } finally {
+      setIsLoading(false);
     }
-  ];
+  };
+
+  const handleBuyClick = (planId: string) => {
+    navigate(`/auth?planId=${planId}&returnTo=/checkout`);
+  };
 
   return (
     <section id="plans" className="py-20 bg-muted/30">
@@ -96,12 +55,12 @@ const PlansSection = () => {
             <Card 
               key={index} 
               className={`relative overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
-                plan.popular 
+                plan.is_popular 
                   ? 'card-plan-featured shadow-xl scale-105' 
                   : 'card-plan'
               }`}
             >
-              {plan.popular && (
+              {plan.is_popular && (
                 <div className="absolute top-0 left-0 right-0">
                   <div className="bg-gradient-to-r from-accent to-secondary text-white text-center py-2 text-sm font-semibold">
                     ⭐ MAIS POPULAR
@@ -109,7 +68,7 @@ const PlansSection = () => {
                 </div>
               )}
 
-              <CardHeader className={plan.popular ? 'pt-12' : 'pt-6'}>
+              <CardHeader className={plan.is_popular ? 'pt-12' : 'pt-6'}>
                 <CardTitle className="text-2xl font-bold text-center">
                   {plan.name}
                 </CardTitle>
@@ -129,19 +88,19 @@ const PlansSection = () => {
                 <div className="grid grid-cols-2 gap-4 py-4 border-y border-card-border">
                   <div className="text-center">
                     <Cpu className="h-6 w-6 text-primary mx-auto mb-2" />
-                    <div className="text-sm font-semibold">{plan.specs.cpu}</div>
+                    <div className="text-sm font-semibold">{plan.cpu}</div>
                   </div>
                   <div className="text-center">
                     <HardDrive className="h-6 w-6 text-secondary mx-auto mb-2" />
-                    <div className="text-sm font-semibold">{plan.specs.storage}</div>
+                    <div className="text-sm font-semibold">{plan.storage}</div>
                   </div>
                   <div className="text-center">
                     <Wifi className="h-6 w-6 text-accent mx-auto mb-2" />
-                    <div className="text-sm font-semibold">{plan.specs.bandwidth}</div>
+                    <div className="text-sm font-semibold">Ilimitada</div>
                   </div>
                   <div className="text-center">
                     <Shield className="h-6 w-6 text-primary mx-auto mb-2" />
-                    <div className="text-sm font-semibold">{plan.specs.ip}</div>
+                    <div className="text-sm font-semibold">IP dedicado</div>
                   </div>
                 </div>
               </CardHeader>
@@ -149,7 +108,7 @@ const PlansSection = () => {
               <CardContent>
                 {/* Features List */}
                 <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
+                  {plan.features.map((feature: string, featureIndex: number) => (
                     <li key={featureIndex} className="flex items-center space-x-3">
                       <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
                       <span className="text-sm">{feature}</span>
@@ -160,11 +119,12 @@ const PlansSection = () => {
                 {/* CTA Button */}
                 <Button 
                   className={`w-full py-3 font-semibold text-lg ${
-                    plan.popular 
+                    plan.is_popular 
                       ? 'btn-accent hover:scale-105' 
                       : 'btn-hero'
                   }`}
                   size="lg"
+                  onClick={() => handleBuyClick(plan.id)}
                 >
                   Comprar Agora
                 </Button>
