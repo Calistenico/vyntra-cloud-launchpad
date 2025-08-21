@@ -2,39 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* VyntraCloud Design System - Modern VPS Hosting */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
+    /* VyntraCloud Brand Colors */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 50% 15%;
 
+    /* Corporate Blue - Primary Brand */
+    --primary: 220 85% 31%; /* #0B3D91 */
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 220 85% 25%;
+
+    /* Tech Blue - Secondary Actions */
+    --secondary: 208 92% 53%; /* #1E90FF */
+    --secondary-foreground: 0 0% 98%;
+    --secondary-hover: 208 92% 45%;
+
+    /* Success Green - CTAs and Confirmations */
+    --accent: 145 63% 49%; /* #2ECC71 */
+    --accent-foreground: 0 0% 98%;
+    --accent-hover: 145 63% 42%;
+
+    /* Card and Surface Colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 50% 15%;
+    --card-border: 220 20% 90%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Muted and Text Colors */
+    --muted: 220 15% 96%;
+    --muted-foreground: 220 15% 45%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Interactive Elements */
+    --border: 220 20% 90%;
+    --input: 220 20% 95%;
+    --ring: 208 92% 53%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Status Colors */
+    --success: 145 63% 49%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-card: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(220 15% 98%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Shadows */
+    --shadow-sm: 0 2px 4px -1px rgba(11, 61, 145, 0.1);
+    --shadow-md: 0 4px 12px -2px rgba(11, 61, 145, 0.15);
+    --shadow-lg: 0 8px 25px -3px rgba(11, 61, 145, 0.2);
+    --shadow-xl: 0 12px 40px -4px rgba(11, 61, 145, 0.25);
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 
@@ -100,6 +128,101 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-poppins;
+  }
+}
+
+@layer components {
+  /* Hero Button Variants */
+  .btn-hero {
+    @apply bg-gradient-to-r from-primary to-secondary text-primary-foreground font-semibold px-8 py-3 rounded-lg;
+    @apply shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-300;
+  }
+
+  .btn-accent {
+    @apply bg-accent text-accent-foreground font-semibold px-6 py-3 rounded-lg;
+    @apply shadow-md hover:shadow-lg hover:bg-accent/90 transition-all duration-300;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary font-semibold px-6 py-3 rounded-lg;
+    @apply hover:bg-primary hover:text-primary-foreground transition-all duration-300;
+  }
+
+  /* Card Variants */
+  .card-elevated {
+    @apply bg-gradient-to-br from-card to-muted/30 border border-card-border rounded-xl;
+    @apply shadow-md hover:shadow-lg transition-all duration-300;
+  }
+
+  .card-plan {
+    @apply card-elevated p-6 hover:scale-105 hover:shadow-xl;
+    @apply transition-transform duration-300 cursor-pointer;
+  }
+
+  .card-plan-featured {
+    @apply card-plan border-2 border-accent shadow-lg;
+    @apply relative overflow-hidden;
+  }
+
+  .card-plan-featured::before {
+    content: '';
+    @apply absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-accent to-secondary;
+  }
+
+  /* Text Styles */
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+
+  /* Animations */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+  }
+
+  /* WhatsApp Button */
+  .whatsapp-fixed {
+    @apply fixed bottom-6 right-6 bg-green-500 text-white p-4 rounded-full shadow-lg z-50;
+    @apply hover:bg-green-600 hover:shadow-xl transform hover:scale-110 transition-all duration-300;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .bg-gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .shadow-custom {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-custom-lg {
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
   }
 }
